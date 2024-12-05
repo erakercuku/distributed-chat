@@ -14,7 +14,9 @@ const io = socketIo(server);
 // Middleware
 app.use(cors({ origin: '*' }));
 app.use(express.json());
-app.use(express.static('frontend')); // Serve frontend files
+const path = require('path'); // Import the 'path' module
+const frontendPath = path.join(__dirname, '../frontend'); // Adjust path if needed
+app.use(express.static(frontendPath)); // Use the adjusted path
 
 // Database Connection
 mongoose.connect('mongodb://127.0.0.1:27017/chat')
