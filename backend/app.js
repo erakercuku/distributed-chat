@@ -35,9 +35,10 @@ mongoose.connect(process.env.MONGO_URI)
   });
 
 // Track online users
-const onlineUsers = new Map();
+const onlineUsers = new Map(); // Online users map
 
-// WebSocket Handling
+module.exports = { onlineUsers };
+
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
@@ -47,6 +48,11 @@ io.on('connection', (socket) => {
   // Notify all clients of updated online users
   io.emit('online-users', Array.from(onlineUsers.values()));
 
+  // Handle incoming messages
+  socket.on('message', (message) => {
+    handleMessage(socket, message, onlineUsers); // Pass onlineUsers to the handler
+  });
+
   // Handle username setup
   socket.on('set-username', (username) => {
     const user = onlineUsers.get(socket.id);
@@ -54,11 +60,6 @@ io.on('connection', (socket) => {
       user.username = username;
       io.emit('online-users', Array.from(onlineUsers.values())); // Update the online users list
     }
-  });
-
-  // Handle incoming messages
-  socket.on('message', (message) => {
-    handleMessage(socket, message);
   });
 
   // Handle disconnection
