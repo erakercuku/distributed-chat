@@ -14,16 +14,16 @@ const io = socketIo(server);
 // Middleware
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+app.use(express.static('frontend')); // Serve frontend files
 
 // Database Connection
-mongoose.connect('mongodb://localhost:27017/chat', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.error('MongoDB connection error:', err);
-});
+mongoose.connect('mongodb://127.0.0.1:27017/chat')
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
 
 // WebSocket Handling
 io.on('connection', (socket) => {
