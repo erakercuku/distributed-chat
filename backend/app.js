@@ -26,9 +26,9 @@ app.get('*', (req, res) => {
 });
 
 // Database Connection
-mongoose.connect('mongodb://127.0.0.1:27017/chat') // Connect to MongoDB
+mongoose.connect('mongodb+srv://hazi:MongoDBAtlashazi5@dd-chat-cluster.yu5q2.mongodb.net/chat?retryWrites=true&w=majority') // Connect to MongoDB
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB Atlas');
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err);
