@@ -26,7 +26,7 @@ app.get('*', (req, res) => {
 });
 
 // Database Connection
-mongoose.connect('mongodb://127.0.0.1:27017/chat') // Connect to MongoDB
+mongoose.connect('mongodb://127.0.0.1:27017/DD_Project_chat') // Connect to MongoDB
   .then(() => {
     console.log('Connected to MongoDB');
   })
