@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path'); // Import path for resolving directories
 require('dotenv').config();
 
 const { handleMessage } = require('./controllers/messageController');
@@ -12,14 +13,20 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // Middleware
-app.use(cors({ origin: '*' }));
-app.use(express.json());
-const path = require('path'); // Import the 'path' module
-const frontendPath = path.join(__dirname, '../frontend'); // Adjust path if needed
-app.use(express.static(frontendPath)); // Use the adjusted path
+app.use(cors({ origin: '*' })); // Allow CORS for all origins
+app.use(express.json()); // Parse JSON payloads
+
+// Serve frontend static files
+const frontendPath = path.join(__dirname, '../frontend'); // Adjust the path to the frontend folder
+app.use(express.static(frontendPath)); // Serve static files from the frontend folder
+
+// Fallback route for single-page apps
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
 
 // Database Connection
-mongoose.connect('mongodb://127.0.0.1:27017/chat')
+mongoose.connect('mongodb://127.0.0.1:27017/chat') // Connect to MongoDB
   .then(() => {
     console.log('Connected to MongoDB');
   })
@@ -31,10 +38,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/chat')
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
+  // Handle incoming messages
   socket.on('message', (message) => {
     handleMessage(socket, message);
   });
 
+  // Handle disconnection
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
   });
