@@ -11,7 +11,7 @@ const handleMessage = async (socket, message) => {
   await savedMessage.save();
 
   // Broadcast to other clients
-  socket.broadcast.emit('message', { content: message, sender });
+  io.emit('message', { content: message, sender });
 };
 
 module.exports = { handleMessage };
