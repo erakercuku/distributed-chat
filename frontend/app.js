@@ -7,7 +7,7 @@ const messageInput = document.getElementById('message-input');
 // Append a message to the messages div
 function appendMessage(message, isMine) {
   const messageElement = document.createElement('div');
-  messageElement.textContent = message;
+  messageElement.textContent = message || 'Message not available';
   messageElement.style.textAlign = isMine ? 'right' : 'left';
   messagesDiv.appendChild(messageElement);
   messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll
