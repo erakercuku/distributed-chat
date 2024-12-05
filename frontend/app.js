@@ -15,8 +15,12 @@ function appendMessage(message, isMine) {
 
 // Handle new messages from the backend
 socket.on('message', (data) => {
-  appendMessage(data, false);
+  // Extract message content and sender
+  const message = data.content || '[No content]';
+  const sender = data.sender || 'Anonymous';
+  appendMessage(`${sender}: ${message}`, false);
 });
+
 
 // Send a message to the backend
 chatForm.addEventListener('submit', (event) => {

@@ -8,7 +8,7 @@ const handleMessage = async (socket, message) => {
   await savedMessage.save();
 
   // Broadcast to other clients
-  socket.broadcast.emit('message', { text: message, sender: socket.id });
+  socket.broadcast.emit('message', { content: message, sender: socket.id });
 };
 
 module.exports = { handleMessage };
