@@ -3,7 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path'); // Import path for resolving directories
+const path = require('path');
 require('dotenv').config();
 
 const { handleMessage } = require('./controllers/messageController');
@@ -13,12 +13,12 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // Middleware
-app.use(cors({ origin: '*' })); // Allow CORS for all origins
-app.use(express.json()); // Parse JSON payloads
+app.use(cors({ origin: '*' }));
+app.use(express.json());
 
 // Serve frontend static files
-const frontendPath = path.join(__dirname, '../frontend'); // Adjust the path to the frontend folder
-app.use(express.static(frontendPath)); // Serve static files from the frontend folder
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
 
 // Fallback route for single-page apps
 app.get('*', (req, res) => {
@@ -26,7 +26,7 @@ app.get('*', (req, res) => {
 });
 
 // Database Connection
-mongoose.connect('mongodb+srv://hazi:MongoDBAtlashazi5@dd-chat-cluster.yu5q2.mongodb.net/chat?retryWrites=true&w=majority') // Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB Atlas');
   })
@@ -34,9 +34,27 @@ mongoose.connect('mongodb+srv://hazi:MongoDBAtlashazi5@dd-chat-cluster.yu5q2.mon
     console.error('MongoDB connection error:', err);
   });
 
+// Track online users
+const onlineUsers = new Map();
+
 // WebSocket Handling
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
+
+  // Add user to onlineUsers with default username
+  onlineUsers.set(socket.id, { username: `User-${socket.id.substring(0, 4)}` });
+
+  // Notify all clients of updated online users
+  io.emit('online-users', Array.from(onlineUsers.values()));
+
+  // Handle username setup
+  socket.on('set-username', (username) => {
+    const user = onlineUsers.get(socket.id);
+    if (user) {
+      user.username = username;
+      io.emit('online-users', Array.from(onlineUsers.values())); // Update the online users list
+    }
+  });
 
   // Handle incoming messages
   socket.on('message', (message) => {
@@ -46,6 +64,8 @@ io.on('connection', (socket) => {
   // Handle disconnection
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
+    onlineUsers.delete(socket.id);
+    io.emit('online-users', Array.from(onlineUsers.values())); // Update the online users list
   });
 });
 

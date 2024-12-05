@@ -9,15 +9,26 @@
 <body>
   <div id="chat-container">
     <h1>Distributed Chat</h1>
+
+    <!-- Username Input -->
+    <div id="username-container">
+      <input type="text" id="username-input" placeholder="Enter your username" required>
+      <button id="username-submit">Set Username</button>
+    </div>
+
+    <!-- Online Users -->
+    <div id="online-users"></div>
+
+    <!-- Chat Messages -->
     <div id="messages"></div>
+
+    <!-- Chat Form -->
     <form id="chat-form">
       <input type="text" id="message-input" placeholder="Type your message..." required>
       <button type="submit">Send</button>
     </form>
   </div>
-  <!-- Include Socket.IO client library -->
   <script src="/socket.io/socket.io.js"></script>
-  <!-- Include the custom app.js script -->
   <script src="app.js"></script>
 </body>
 </html>
